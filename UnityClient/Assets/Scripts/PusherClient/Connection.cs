@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -55,12 +55,12 @@ namespace PusherClient
             _allowReconnect = true;
 
             _websocket = new WebSocket(_url);
-			_websocket.OnError += websocket_Error;
-			_websocket.OnOpen += websocket_Opened;
-			_websocket.OnClose += websocket_Closed;
-			_websocket.OnMessage += websocket_MessageReceived;
+            _websocket.OnError += websocket_Error;
+            _websocket.OnOpen += websocket_Opened;
+            _websocket.OnClose += websocket_Closed;
+            _websocket.OnMessage += websocket_MessageReceived;
             _websocket.EmitOnPing = true;
-			_websocket.ConnectAsync();
+            _websocket.ConnectAsync();
         }
 
         internal void Disconnect()
@@ -72,8 +72,8 @@ namespace PusherClient
 
         internal void Send(string message)
         {
-			Pusher.Log( "Sending: " + message );
-			_websocket.SendAsync( message, delegate(bool obj) { } );
+            Pusher.Log("Sending: " + message);
+            _websocket.SendAsync(message, delegate (bool obj) { });
         }
 
         #endregion
@@ -90,15 +90,15 @@ namespace PusherClient
 
         private void websocket_MessageReceived(object sender, MessageEventArgs e)
         {
-			Pusher.Log( "Websocket message received: " + e.Data );
+            Pusher.Log("Websocket message received: " + e.Data);
 
             if (e.IsPing)
-			{
-				Send("{\"event\": \"pusher:pong\"}");
-				return;
-			}
+            {
+                Send("{\"event\": \"pusher:pong\"}");
+                return;
+            }
 
-			PusherEventData message = PusherEventData.FromJson( e.Data );
+            PusherEventData message = PusherEventData.FromJson(e.Data);
             _pusher.EmitEvent(message.eventName, message.data);
 
             if (message.eventName.StartsWith("pusher"))
@@ -142,7 +142,7 @@ namespace PusherClient
                             }
                         }
 
-						Pusher.LogWarning( "Received a presence event on channel '" + message.channel + "', however there is no presence channel which matches." );
+                        Pusher.LogWarning("Received a presence event on channel '" + message.channel + "', however there is no presence channel which matches.");
                         break;
 
                     case Constants.CHANNEL_MEMBER_REMOVED:
@@ -159,7 +159,7 @@ namespace PusherClient
                             }
                         }
 
-						Pusher.LogWarning( "Received a presence event on channel '" + message.channel + "', however there is no presence channel which matches." );
+                        Pusher.LogWarning("Received a presence event on channel '" + message.channel + "', however there is no presence channel which matches.");
                         break;
 
                 }
@@ -171,35 +171,35 @@ namespace PusherClient
                     _pusher.Channels[message.channel].EmitEvent(message.eventName, message.data);
             }
 
-            
+
         }
 
         private void websocket_Opened(object sender, EventArgs e)
         {
-			Pusher.Log( "Websocket opened OK." );
+            Pusher.Log("Websocket opened OK.");
         }
 
         private void websocket_Closed(object sender, EventArgs e)
         {
-			Pusher.Log( "Websocket connection has been closed" );
+            Pusher.Log("Websocket connection has been closed");
 
             ChangeState(ConnectionState.Disconnected);
 
-            if(_allowReconnect)
+            if (_allowReconnect)
                 Connect();
         }
 
         private void websocket_Error(object sender, WebSocketSharp.ErrorEventArgs e)
         {
-			// TODO: What happens here? Do I need to re-connect, or do I just log the issue?
-			Pusher.LogWarning( "Websocket error: " + e.Message );
+            // TODO: What happens here? Do I need to re-connect, or do I just log the issue?
+            Pusher.LogWarning("Websocket error: " + e.Message);
         }
 
         private void ParseConnectionEstablished(string data)
         {
-			Dictionary<string,object> dict = JsonHelper.Deserialize<Dictionary<string,object>>( data );
-			_socketId = DataFactoryHelper.GetDictonaryValue( dict, "socket_id", string.Empty );
-            
+            Dictionary<string, object> dict = JsonHelper.Deserialize<Dictionary<string, object>>(data);
+            _socketId = DataFactoryHelper.GetDictonaryValue(dict, "socket_id", string.Empty);
+
             ChangeState(ConnectionState.Connected);
 
             if (Connected != null)
@@ -208,10 +208,10 @@ namespace PusherClient
 
         private void ParseError(string data)
         {
-			Dictionary<string,object> dict = JsonHelper.Deserialize<Dictionary<string,object>>( data );
-			string message = DataFactoryHelper.GetDictonaryValue( dict, "message", string.Empty );
-			string errorCodeStr = DataFactoryHelper.GetDictonaryValue( dict, "code", ErrorCodes.Unkown.ToString() );
-			ErrorCodes error = DataFactoryHelper.EnumFromString<ErrorCodes>( errorCodeStr );
+            Dictionary<string, object> dict = JsonHelper.Deserialize<Dictionary<string, object>>(data);
+            string message = DataFactoryHelper.GetDictonaryValue(dict, "message", string.Empty);
+            string errorCodeStr = DataFactoryHelper.GetDictonaryValue(dict, "code", ErrorCodes.Unkown.ToString());
+            ErrorCodes error = DataFactoryHelper.EnumFromString<ErrorCodes>(errorCodeStr);
 
             throw new PusherException(message, error);
         }

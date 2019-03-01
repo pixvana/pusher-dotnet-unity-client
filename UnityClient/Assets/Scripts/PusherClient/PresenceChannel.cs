@@ -1,22 +1,29 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Newtonsoft.Json;
 
 namespace PusherClient
 {
-    public delegate void MemberEventHandler(object sender);
-
+    /// <summary>
+    /// Represents a Pusher Presence Channel that can be subscribed to
+    /// </summary>
     public class PresenceChannel : PrivateChannel
     {
-        public Dictionary<string, object> Members = new Dictionary<string, object>();
+        /// <summary>
+        /// Fires when a Member is Added
+        /// </summary>
+        public event MemberAddedEventHandler MemberAdded;
 
-        public event MemberEventHandler MemberAdded;
-        public event MemberEventHandler MemberRemoved;
+        /// <summary>
+        /// Fires when a Member is Removed
+        /// </summary>
+        public event MemberRemovedEventHandler MemberRemoved;
 
-        public PresenceChannel(string channelName, Pusher pusher) : base(channelName, pusher) { }
+        internal PresenceChannel(string channelName, ITriggerChannels pusher) : base(channelName, pusher) { }
 
-        #region Internal Methods
+        /// <summary>
+        /// Gets the Members of the channel
+        /// </summary>
+        public Dictionary<string, dynamic> Members { get; private set; } = new Dictionary<string, dynamic>();
 
         internal override void SubscriptionSucceeded(string data)
         {
@@ -34,7 +41,7 @@ namespace PusherClient
                 Members[member.Key] = member.Value;
 
             if (MemberAdded != null)
-                MemberAdded(this);
+                MemberAdded(this, member);
         }
 
         internal void RemoveMember(string data)
@@ -50,24 +57,13 @@ namespace PusherClient
             }
         }
 
-        #endregion
-
-        #region Private Methods
-
-        private Dictionary<string, object> ParseMembersList(string data)
+        private Dictionary<string, dynamic> ParseMembersList(string data)
         {
-            Dictionary<string, object> members = new Dictionary<string, object>();
-			return members;
+            Dictionary<string, dynamic> members = new Dictionary<string, dynamic>();
 
-			/*
-			Dictionary<string, object> dataAsDict = JsonHelper.Deserialize<Dictionary<string, object>>(data);
-			Dictionary<string, object> presenceDict = (Dictionary<string,object>)dataAsDict[ "presence" ];
-			foreach( KeyValuePair presenceKvp in dataAsDict ) {
-				string 
-				i++;
-			}
+            var dataAsObj = JsonConvert.DeserializeObject<dynamic>(data);
 
-			for (int i = 0; i < (int)dataAsObj.presence.count; i++)
+            for (int i = 0; i < (int)dataAsObj.presence.count; i++)
             {
                 var id = (string)dataAsObj.presence.ids[i];
                 var val = (dynamic)dataAsObj.presence.hash[id];
@@ -75,26 +71,16 @@ namespace PusherClient
             }
 
             return members;
-			*/
         }
 
-        private KeyValuePair<string, object> ParseMember(string data)
+        private KeyValuePair<string, dynamic> ParseMember(string data)
         {
-			/*
-			var dataAsObj = JsonHelper.Deserialize<dynamic>(data);
+            var dataAsObj = JsonConvert.DeserializeObject<dynamic>(data);
 
             var id = (string)dataAsObj.user_id;
             var val = (dynamic)dataAsObj.user_info;
 
             return new KeyValuePair<string, dynamic>(id, val);
-            */
-
-			var id = "";
-			var val ="";
-			return new KeyValuePair<string, object>(id, val);
         }
-
-        #endregion
-
     }
 }

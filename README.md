@@ -12,16 +12,16 @@ More general documentation can be found at <http://pusher.com/docs/>.
 - Uses MiniJSON for JSON parsing <https://gist.github.com/darktable/1411710>
 - Removed nuget support, and C# solution project files
 
-
 ## Installation
 
 Import PusherClient.unitypackage file from top level of this repo.
 
-As referenced above, the project requires MiniJSON and websocket-sharp.  If you do not have
+As referenced above, the project requires MiniJSON and websocket-sharp. If you do not have
 these in your project already then copy contents of UnityClient/Assets/Plugins into your
 project's Plugins folder (should include MiniJSON directory, websocket-sharp.dll)
 
 Example usage below, for a more complete example see [UnityClient/Assets/Scripts/App.cs](https://github.com/MiketoString/pusher-dotnet-unity-client/blob/master/UnityClient/Assets/Scripts/App.cs)
+
 ```
 // app key from pusher settings
 PusherSettings.AppKey = "";
@@ -33,7 +33,6 @@ PusherClient.Pusher pusherClient = new PusherClient.Pusher( PusherSettings.AppKe
 pusherClient.Connected += HandleConnected;
 pusherClient.Connect();
 ```
-
 
 ## License
 
