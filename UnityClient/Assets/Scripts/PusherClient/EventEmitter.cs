@@ -8,6 +8,7 @@ namespace PusherClient
     /// </summary>
     public class EventEmitter
     {
+        protected PusherOptions _options = null;
         private readonly Dictionary<string, List<Action<object>>> _eventListeners = new Dictionary<string, List<Action<object>>>();
         private readonly List<Action<string, object>> _generalListeners = new List<Action<string, object>>();
 
@@ -72,7 +73,7 @@ namespace PusherClient
         internal void EmitEvent(string eventName, string data)
         {
 
-            var obj = MiniJSON.Json.Deserialize(data); ;
+            var obj = _options.Serializer.Deserialize(data);
 
             // Emit to general listeners regardless of event type
             foreach (var action in _generalListeners)

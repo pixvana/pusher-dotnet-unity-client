@@ -41,7 +41,7 @@ namespace PusherClient
 
         const int PROTOCOL_NUMBER = 5;
         string _applicationKey = null;
-        PusherOptions _options = null;
+        public PusherOptions Options { get { return _options; } }
         private Connection _connection = null;
 
         public event ConnectedEventHandler Connected;
@@ -175,7 +175,7 @@ namespace PusherClient
             else
             {
                 // No need for auth details. Just send subscribe event
-                _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
+                _connection.Send(_options.Serializer.Serialize(new Dictionary<string, object>() {
                     { "event", Constants.CHANNEL_SUBSCRIBE },
                     {
                         "data", new Dictionary<string,object>() {
@@ -198,11 +198,11 @@ namespace PusherClient
         private void SendChannelAuthData(string channelName, string jsonAuth)
         {
             // parse info from json data
-            Dictionary<string, object> authDict = JsonHelper.Deserialize<Dictionary<string, object>>(jsonAuth);
+            Dictionary<string, object> authDict = _options.Serializer.Deserialize<Dictionary<string, object>>(jsonAuth);
             string authFromMessage = DataFactoryHelper.GetDictonaryValue(authDict, "auth", string.Empty);
             string channelDataFromMessage = DataFactoryHelper.GetDictonaryValue(authDict, "channel_data", string.Empty);
 
-            _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
+            _connection.Send(_options.Serializer.Serialize(new Dictionary<string, object>() {
                 { "event", Constants.CHANNEL_SUBSCRIBE },
                 {
                     "data", new Dictionary<string,object>() {
@@ -224,7 +224,7 @@ namespace PusherClient
 
         public void Send(string eventName, object data, string channel = null)
         {
-            _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
+            _connection.Send(_options.Serializer.Serialize(new Dictionary<string, object>() {
                 { "event", eventName },
                 { "data", data },
                 { "channel", channel }
@@ -237,7 +237,7 @@ namespace PusherClient
 
         void ITriggerChannels.Trigger(string channelName, string eventName, object obj)
         {
-            _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
+            _connection.Send(_options.Serializer.Serialize(new Dictionary<string, object>() {
                 { "event", eventName },
                 { "channel", channelName },
                 { "data", obj }
@@ -246,7 +246,7 @@ namespace PusherClient
 
         void ITriggerChannels.Unsubscribe(string channelName)
         {
-            _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
+            _connection.Send(_options.Serializer.Serialize(new Dictionary<string, object>() {
                 { "event", Constants.CHANNEL_UNSUBSCRIBE },
                 {
                     "data", new Dictionary<string,object>() {

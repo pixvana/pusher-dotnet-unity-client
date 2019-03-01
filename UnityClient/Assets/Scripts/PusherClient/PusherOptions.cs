@@ -21,5 +21,7 @@ namespace PusherClient
         public string Cluster { get; set; } = "us3";
 
         internal string Host => $"ws-{Cluster}.pusher.com";
+
+        public IJsonSerializer Serializer { get; set; } = null;
     }
 }

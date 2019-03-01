@@ -98,7 +98,7 @@ namespace PusherClient
                 return;
             }
 
-            PusherEventData message = PusherEventData.FromJson(e.Data);
+            PusherEventData message = PusherEventData.FromJson(e.Data, _pusher.Options.Serializer);
             _pusher.EmitEvent(message.eventName, message.data);
 
             if (message.eventName.StartsWith("pusher"))
@@ -197,7 +197,7 @@ namespace PusherClient
 
         private void ParseConnectionEstablished(string data)
         {
-            Dictionary<string, object> dict = JsonHelper.Deserialize<Dictionary<string, object>>(data);
+            Dictionary<string, object> dict = _pusher.Options.Serializer.Deserialize<Dictionary<string, object>>(data);
             _socketId = DataFactoryHelper.GetDictonaryValue(dict, "socket_id", string.Empty);
 
             ChangeState(ConnectionState.Connected);
@@ -208,7 +208,7 @@ namespace PusherClient
 
         private void ParseError(string data)
         {
-            Dictionary<string, object> dict = JsonHelper.Deserialize<Dictionary<string, object>>(data);
+            Dictionary<string, object> dict = _pusher.Options.Serializer.Deserialize<Dictionary<string, object>>(data);
             string message = DataFactoryHelper.GetDictonaryValue(dict, "message", string.Empty);
             string errorCodeStr = DataFactoryHelper.GetDictonaryValue(dict, "code", ErrorCodes.Unkown.ToString());
             ErrorCodes error = DataFactoryHelper.EnumFromString<ErrorCodes>(errorCodeStr);

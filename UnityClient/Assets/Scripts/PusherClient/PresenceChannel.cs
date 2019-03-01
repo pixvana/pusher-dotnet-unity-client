@@ -60,7 +60,7 @@ namespace PusherClient
         {
             Dictionary<string, object> members = new Dictionary<string, object>();
 
-            var dataAsObj = MiniJSON.Json.Deserialize(data);
+            //var dataAsObj = MiniJSON.Json.Deserialize(data);
 
             // for (int i = 0; i < (int)dataAsObj.presence.count; i++)
             // {
@@ -74,7 +74,7 @@ namespace PusherClient
 
         private KeyValuePair<string, object> ParseMember(string data)
         {
-            var dataAsObj = MiniJSON.Json.Deserialize(data);
+            //var dataAsObj = MiniJSON.Json.Deserialize(data);
 
             // var id = (string)dataAsObj.user_id;
             // var val = (object)dataAsObj.user_info;
