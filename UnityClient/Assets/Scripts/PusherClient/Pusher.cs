@@ -25,10 +25,8 @@ namespace PusherClient
     // TODO: Implement connection fallback strategy
 
     // A delegate type for hooking up change notifications.
-    public delegate void ConnectedEventHandler(object sender);
-    public delegate void ConnectionStateChangedEventHandler(object sender, ConnectionState state);
 
-    public class Pusher : EventEmitter
+    public class Pusher : EventEmitter, ITriggerChannels
     {
         public static void Log(string message)
         {
@@ -103,9 +101,9 @@ namespace PusherClient
                     case ConnectionState.Connecting:
                         LogWarning("Attempt to connect when connection is already in 'Connecting' state. New attempt has been ignored.");
                         break;
-                    case ConnectionState.Failed:
+                    case ConnectionState.ConnectionFailed:
                         LogWarning("Cannot attempt re-connection once in 'Failed' state");
-                        throw new PusherException("Cannot attempt re-connection once in 'Failed' state", ErrorCodes.ConnectionFailed);
+                        throw new PusherException("Cannot attempt re-connection once in 'Failed' state", ErrorCodes.Unkown);
                 }
             }
 
@@ -239,7 +237,7 @@ namespace PusherClient
 
         #region Internal Methods
 
-        internal void Trigger(string channelName, string eventName, object obj)
+        void ITriggerChannels.Trigger(string channelName, string eventName, object obj)
         {
             _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
                 { "event", eventName },
@@ -248,7 +246,7 @@ namespace PusherClient
             }));
         }
 
-        internal void Unsubscribe(string channelName)
+        void ITriggerChannels.Unsubscribe(string channelName)
         {
             _connection.Send(JsonHelper.Serialize(new Dictionary<string, object>() {
                 { "event", Constants.CHANNEL_UNSUBSCRIBE },

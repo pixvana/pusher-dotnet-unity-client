@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace PusherClient
 {
@@ -23,7 +22,7 @@ namespace PusherClient
         /// <summary>
         /// Gets the Members of the channel
         /// </summary>
-        public Dictionary<string, dynamic> Members { get; private set; } = new Dictionary<string, dynamic>();
+        public Dictionary<string, object> Members { get; private set; } = new Dictionary<string, object>();
 
         internal override void SubscriptionSucceeded(string data)
         {
@@ -57,30 +56,31 @@ namespace PusherClient
             }
         }
 
-        private Dictionary<string, dynamic> ParseMembersList(string data)
+        private Dictionary<string, object> ParseMembersList(string data)
         {
-            Dictionary<string, dynamic> members = new Dictionary<string, dynamic>();
+            Dictionary<string, object> members = new Dictionary<string, object>();
 
-            var dataAsObj = JsonConvert.DeserializeObject<dynamic>(data);
+            var dataAsObj = MiniJSON.Json.Deserialize(data);
 
-            for (int i = 0; i < (int)dataAsObj.presence.count; i++)
-            {
-                var id = (string)dataAsObj.presence.ids[i];
-                var val = (dynamic)dataAsObj.presence.hash[id];
-                members.Add(id, val);
-            }
+            // for (int i = 0; i < (int)dataAsObj.presence.count; i++)
+            // {
+            //     var id = (string)dataAsObj.presence.ids[i];
+            //     var val = (object)dataAsObj.presence.hash[id];
+            //     members.Add(id, val);
+            // }
 
             return members;
         }
 
-        private KeyValuePair<string, dynamic> ParseMember(string data)
+        private KeyValuePair<string, object> ParseMember(string data)
         {
-            var dataAsObj = JsonConvert.DeserializeObject<dynamic>(data);
+            var dataAsObj = MiniJSON.Json.Deserialize(data);
 
-            var id = (string)dataAsObj.user_id;
-            var val = (dynamic)dataAsObj.user_info;
+            // var id = (string)dataAsObj.user_id;
+            // var val = (object)dataAsObj.user_info;
 
-            return new KeyValuePair<string, dynamic>(id, val);
+            return new KeyValuePair<string, object>("id", "val");
         }
+
     }
 }
