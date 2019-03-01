@@ -6,17 +6,19 @@ namespace PusherClient
     /// <summary>
     /// An implementation of the <see cref="IAuthorizer"/> using Http
     /// </summary>
-    public class HttpAuthorizer: IAuthorizer
+    public class HttpAuthorizer : IAuthorizer
     {
         private readonly Uri _authEndpoint;
+        private string _userId;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="authEndpoint">The End point to contact</param>
-        public HttpAuthorizer(string authEndpoint)
+        public HttpAuthorizer(string authEndpoint, string userId = null)
         {
             _authEndpoint = new Uri(authEndpoint);
+            _userId = userId;
         }
 
         /// <summary>
@@ -32,6 +34,10 @@ namespace PusherClient
             using (var webClient = new WebClient())
             {
                 var data = $"channel_name={channelName}&socket_id={socketId}";
+                if (_userId != null)
+                {
+                    data = data + $"&user_id={_userId}";
+                }
                 webClient.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
                 authToken = webClient.UploadString(_authEndpoint, "POST", data);
             }
