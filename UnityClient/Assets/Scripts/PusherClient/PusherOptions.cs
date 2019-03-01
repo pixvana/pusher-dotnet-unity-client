@@ -22,6 +22,6 @@ namespace PusherClient
 
         internal string Host => $"ws-{Cluster}.pusher.com";
 
-        public IJsonSerializer Serializer { get; set; } = null;
+        public IJsonSerializer Serializer { get; set; } = new DefaultJSONSerializer();
     }
 }
