@@ -18,7 +18,7 @@ namespace PusherClient
         /// <summary>
         /// Gets or sets the Cluster to user for the Host
         /// </summary>
-        public string Cluster { get; set; } = "mt1";
+        public string Cluster { get; set; } = "us3";
 
         internal string Host => $"ws-{Cluster}.pusher.com";
     }

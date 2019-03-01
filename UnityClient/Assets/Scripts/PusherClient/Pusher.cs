@@ -42,8 +42,6 @@ namespace PusherClient
         const int PROTOCOL_NUMBER = 5;
         string _applicationKey = null;
         PusherOptions _options = null;
-
-        public string Host = "ws.pusherapp.com";
         private Connection _connection = null;
 
         public event ConnectedEventHandler Connected;
@@ -115,7 +113,7 @@ namespace PusherClient
             // TODO: Fallback to secure?
 
             string url = String.Format("{0}{1}/app/{2}?protocol={3}&client={4}&version={5}",
-                scheme, this.Host, _applicationKey, Pusher.PROTOCOL_NUMBER, PusherSettings.ClientName, PusherSettings.ClientVersion
+                scheme, this._options.Host, _applicationKey, Pusher.PROTOCOL_NUMBER, PusherSettings.ClientName, PusherSettings.ClientVersion
             );
 
             Log("Connecting to url: '" + url + "'");
