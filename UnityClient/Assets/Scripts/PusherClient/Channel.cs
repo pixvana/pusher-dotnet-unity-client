@@ -31,6 +31,7 @@ namespace PusherClient
         internal Channel(string channelName, ITriggerChannels pusher)
         {
             _pusher = pusher;
+            _serializer = pusher.Serializer;
             Name = channelName;
         }
 

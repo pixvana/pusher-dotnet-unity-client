@@ -39,8 +39,18 @@ namespace PusherClient
             UnityEngine.Debug.LogWarning("Pusher: " + message);
         }
 
+        public static void LogError(string message, Exception exception = null)
+        {
+            UnityEngine.Debug.LogError("Pusher: " + message);
+            if (exception != null)
+            {
+                UnityEngine.Debug.LogException(exception);
+            }
+        }
+
         const int PROTOCOL_NUMBER = 5;
         string _applicationKey = null;
+        private PusherOptions _options = null;
         public PusherOptions Options { get { return _options; } }
         private Connection _connection = null;
 
@@ -66,6 +76,8 @@ namespace PusherClient
             }
         }
 
+        public IJsonSerializer Serializer => _serializer;
+
         #endregion
 
 
@@ -82,12 +94,14 @@ namespace PusherClient
 
             if (PusherSettings.HttpAuthUrl.Length > 0)
                 _options.Authorizer = new HttpAuthorizer(PusherSettings.HttpAuthUrl);
+            _serializer = _options.Serializer;
         }
 
         public Pusher(string appKey, PusherOptions pusherOptions)
         {
             _applicationKey = appKey;
             _options = pusherOptions;
+            _serializer = pusherOptions.Serializer;
         }
 
         #region Public Methods

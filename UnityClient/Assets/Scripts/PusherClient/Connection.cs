@@ -191,8 +191,7 @@ namespace PusherClient
 
         private void websocket_Error(object sender, WebSocketSharp.ErrorEventArgs e)
         {
-            // TODO: What happens here? Do I need to re-connect, or do I just log the issue?
-            Pusher.LogWarning("Websocket error: " + e.Message);
+            Pusher.LogError("Websocket error: " + e.Message, e.Exception);
         }
 
         private void ParseConnectionEstablished(string data)
