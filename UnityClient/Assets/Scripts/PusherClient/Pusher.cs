@@ -84,6 +84,12 @@ namespace PusherClient
                 _options.Authorizer = new HttpAuthorizer(PusherSettings.HttpAuthUrl);
         }
 
+        public Pusher(string appKey, PusherOptions pusherOptions)
+        {
+            _applicationKey = appKey;
+            _options = pusherOptions;
+        }
+
         #region Public Methods
 
         public void Connect()
