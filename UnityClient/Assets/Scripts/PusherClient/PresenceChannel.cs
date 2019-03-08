@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PusherClient
 {
@@ -58,28 +59,53 @@ namespace PusherClient
 
         private Dictionary<string, object> ParseMembersList(string data)
         {
-            Dictionary<string, object> members = new Dictionary<string, object>();
+            var members = new Dictionary<string, object>();
 
-            //var dataAsObj = MiniJSON.Json.Deserialize(data);
+            var dataAsObj = (Dictionary<string, object>)_serializer.Deserialize(data);
+            var dataValue = (Dictionary<string, object>)dataAsObj["presence"];
 
-            // for (int i = 0; i < (int)dataAsObj.presence.count; i++)
-            // {
-            //     var id = (string)dataAsObj.presence.ids[i];
-            //     var val = (object)dataAsObj.presence.hash[id];
-            //     members.Add(id, val);
-            // }
+            var ids = ((List<object>)dataValue["ids"]).Cast<string>().ToList();
+            var hash = (Dictionary<string, object>)dataValue["hash"];
+
+            foreach (string id in ids)
+            {
+                if (hash.ContainsKey(id))
+                {
+                    var userInfo = ParseUserInfo(hash[id]);
+                    members.Add(id, userInfo);
+                }
+                else
+                {
+                    members.Add(id, null);
+                }
+            }
 
             return members;
         }
 
         private KeyValuePair<string, object> ParseMember(string data)
         {
-            //var dataAsObj = MiniJSON.Json.Deserialize(data);
+            var dataAsObj = (Dictionary<string, object>)_serializer.Deserialize(data);
+            string id = (string)dataAsObj["user_id"];
 
-            // var id = (string)dataAsObj.user_id;
-            // var val = (object)dataAsObj.user_info;
+            if (dataAsObj.ContainsKey("user_info"))
+            {
+                return new KeyValuePair<string, object>(id, ParseUserInfo(dataAsObj["user_info"]));
+            }
 
-            return new KeyValuePair<string, object>("id", "val");
+            return new KeyValuePair<string, object>(id, null);
+        }
+
+        private Dictionary<string, object> ParseUserInfo(object nodeObj)
+        {
+            var parsedObject = new Dictionary<string, object>();
+            var node = ((Dictionary<string, object>)nodeObj)["node"];
+            var children = ((Dictionary<string, object>)node)["_children"];
+            foreach (KeyValuePair<string, object> child in ((Dictionary<string, object>)children))
+            {
+                parsedObject.Add(child.Key, ((Dictionary<string, object>)child.Value)["_value"]);
+            }
+            return parsedObject;
         }
 
     }
